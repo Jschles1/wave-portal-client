@@ -28,7 +28,6 @@ const App = () => {
                 provider.removeAllListeners();
                 window.location.reload();
             } else {
-                console.log('network', newNetwork.name);
                 setNetwork(newNetwork.name);
             }
         });
