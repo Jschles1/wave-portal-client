@@ -1,10 +1,11 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { ethers } from 'ethers';
 import './App.css';
 import abi from './utils/WavePortal.json';
 
-const contractAddress = '0xeD8B9C8d99AFB817cdC7D516d61bD37cbac69615';
+const contractAddress = '0x5257883a1A9A7906299ABFDb9d0C4CB904445F5b';
 const contractABI = abi.abi;
 
 const App = () => {
@@ -12,6 +13,7 @@ const App = () => {
     const [network, setNetwork] = useState('');
     const [contract, setContract] = useState('');
     const [allWaves, setAllWaves] = useState([]);
+    const [loadingMessage, setLoadingMessage] = useState('');
     const { register, handleSubmit } = useForm();
 
     const isRinkeby = network === 'rinkeby';
@@ -128,14 +130,13 @@ const App = () => {
                     let count = await contract.getTotalWaves();
                     console.log('Retrieved total wave count...', count.toNumber());
 
-                    const waveTxn = await contract.wave(message, { gasLimit: 300000 });
-                    console.log('Mining...', waveTxn.hash);
+                    setLoadingMessage('Mining Transaction...');
+
+                    const waveTxn = await contract.initializeWave(message);
+                    console.log('Mining Wave Init...', waveTxn.hash);
 
                     await waveTxn.wait();
-                    console.log('Mined -- ', waveTxn.hash);
-
-                    count = await contract.getTotalWaves();
-                    console.log('Retrieved total wave count...', count.toNumber());
+                    console.log('Wave Init Mined -- ', waveTxn.hash);
                 } else {
                     console.log("Ethereum object doesn't exist!");
                 }
@@ -153,11 +154,12 @@ const App = () => {
         if (contract) {
             getAllWaves();
 
-            contract.on('NewWave', getAllWaves);
+            contract.on('NewWave', (address, timestamp, message, isWinner) => {
+                setLoadingMessage('');
+                getAllWaves();
+            });
 
-            return () => {
-                contract.off('NewWave');
-            };
+            contract.on('RandomNumberRequested', () => setLoadingMessage('Generating Lottery Result...'));
         }
     }, [contract]);
 
@@ -176,8 +178,12 @@ const App = () => {
                 {!!currentAccount && (
                     <>
                         <textarea {...register('message')} name="message" />
-                        <button className="waveButton" onClick={handleSubmit(wave)} disabled={!isRinkeby}>
-                            Wave at Me
+                        <button
+                            className="waveButton"
+                            onClick={handleSubmit(wave)}
+                            disabled={!isRinkeby || !!loadingMessage}
+                        >
+                            {loadingMessage ? loadingMessage : 'Wave at Me'}
                         </button>
                         {isRinkeby ? (
                             allWaves.map((wave, index) => {
