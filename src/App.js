@@ -159,7 +159,6 @@ const App = () => {
 
     const deleteWaves = async () => {
         await contract.resetWaves();
-        console.log('waves deleted');
         setAllWaves([]);
     };
 
@@ -180,7 +179,7 @@ const App = () => {
                 console.log('isWinner', isWinner);
 
                 if (isWinner) {
-                    console.log('you won!');
+                    console.log('You won!');
                 }
             });
 
