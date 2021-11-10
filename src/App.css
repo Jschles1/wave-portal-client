@@ -18,17 +18,18 @@
   font-weight: 600;
 }
 
-.bio {
+.bio, 
+.owner {
   text-align: center;
   color: gray;
   margin-top: 16px;
 }
 
-.waveButton {
+.waveButton,
+.deleteButton {
   cursor: pointer;
   margin-top: 16px;
   padding: 8px;
   border: 0;
   border-radius: 5px;
-  
 }

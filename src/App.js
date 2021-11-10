@@ -5,7 +5,7 @@ import { ethers } from 'ethers';
 import './App.css';
 import abi from './utils/WavePortal.json';
 
-const contractAddress = '0x5257883a1A9A7906299ABFDb9d0C4CB904445F5b';
+const contractAddress = '0xa0d51d2522EdE93EC56c42C3bc152a2f43460F7b';
 const contractABI = abi.abi;
 
 const App = () => {
@@ -14,6 +14,7 @@ const App = () => {
     const [contract, setContract] = useState('');
     const [allWaves, setAllWaves] = useState([]);
     const [loadingMessage, setLoadingMessage] = useState('');
+    const [isOwner, setIsOwner] = useState(false);
     const { register, handleSubmit } = useForm();
 
     const isRinkeby = network === 'rinkeby';
@@ -37,6 +38,7 @@ const App = () => {
         ethereum.on('accountsChanged', async () => {
             const accounts = await provider.listAccounts();
             setCurrentAccount(accounts[0] ? accounts[0] : '');
+            checkIsOwner();
         });
 
         return provider;
@@ -68,6 +70,15 @@ const App = () => {
             }
         } catch (error) {
             console.log(error);
+        }
+    };
+
+    const checkIsOwner = async () => {
+        if (contract) {
+            const owner = await contract.owner();
+            if (currentAccount.toUpperCase() === owner.toUpperCase()) {
+                setIsOwner(true);
+            }
         }
     };
 
@@ -146,6 +157,12 @@ const App = () => {
         }
     };
 
+    const deleteWaves = async () => {
+        await contract.resetWaves();
+        console.log('waves deleted');
+        setAllWaves([]);
+    };
+
     useEffect(() => {
         checkIfWalletIsConnected();
     }, []);
@@ -154,9 +171,17 @@ const App = () => {
         if (contract) {
             getAllWaves();
 
+            checkIsOwner();
+
             contract.on('NewWave', (address, timestamp, message, isWinner) => {
                 setLoadingMessage('');
                 getAllWaves();
+
+                console.log('isWinner', isWinner);
+
+                if (isWinner) {
+                    console.log('you won!');
+                }
             });
 
             contract.on('RandomNumberRequested', () => setLoadingMessage('Generating Lottery Result...'));
@@ -172,6 +197,19 @@ const App = () => {
                     </span>{' '}
                     Hey there!
                 </div>
+
+                {isOwner ? (
+                    <>
+                        <p className="owner">You are the Owner!</p>
+                        <button
+                            className="deleteButton"
+                            onClick={deleteWaves}
+                            disabled={!isRinkeby || !!loadingMessage}
+                        >
+                            Delete Waves
+                        </button>
+                    </>
+                ) : null}
 
                 <p className="bio">I'm John. Connect your Ethereum wallet and wave at me!</p>
 
