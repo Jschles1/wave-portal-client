@@ -15,6 +15,7 @@ const App = () => {
     const [allWaves, setAllWaves] = useState([]);
     const [loadingMessage, setLoadingMessage] = useState('');
     const [isOwner, setIsOwner] = useState(false);
+    const [lotteryResultMessage, setLotteryResultMessage] = useState('');
     const { register, handleSubmit } = useForm();
 
     const isRinkeby = network === 'rinkeby';
@@ -162,6 +163,14 @@ const App = () => {
         setAllWaves([]);
     };
 
+    const showLotteryResult = (isWiiner) => {
+        if (isWiiner) {
+            setLotteryResultMessage('Congrats! You Won!');
+        } else {
+            setLotteryResultMessage('Sorry, you lost.');
+        }
+    };
+
     useEffect(() => {
         checkIfWalletIsConnected();
     }, []);
@@ -172,15 +181,11 @@ const App = () => {
 
             checkIsOwner();
 
-            contract.on('NewWave', (address, timestamp, message, isWinner) => {
+            contract.on('NewWave', (_address, _timestamp, _message, isWinner) => {
                 setLoadingMessage('');
                 getAllWaves();
 
-                console.log('isWinner', isWinner);
-
-                if (isWinner) {
-                    console.log('You won!');
-                }
+                showLotteryResult(isWinner);
             });
 
             contract.on('RandomNumberRequested', () => setLoadingMessage('Generating Lottery Result...'));
@@ -190,16 +195,9 @@ const App = () => {
     return (
         <div className="mainContainer">
             <div className="dataContainer">
-                <div className="header">
-                    <span role="img" aria-label="wave">
-                        👋
-                    </span>{' '}
-                    Hey there!
-                </div>
-
                 {isOwner ? (
                     <>
-                        <p className="owner">You are the Owner!</p>
+                        <div className="header">Welcome back John!</div>
                         <button
                             className="deleteButton"
                             onClick={deleteWaves}
@@ -208,9 +206,18 @@ const App = () => {
                             Delete Waves
                         </button>
                     </>
-                ) : null}
+                ) : (
+                    <>
+                        <div className="header">
+                            <span role="img" aria-label="wave">
+                                👋
+                            </span>{' '}
+                            Hey there!
+                        </div>
 
-                <p className="bio">I'm John. Connect your Ethereum wallet and wave at me!</p>
+                        <p className="bio">I'm John. Connect your Ethereum wallet and wave at me!</p>
+                    </>
+                )}
 
                 {!!currentAccount && (
                     <>
@@ -222,6 +229,13 @@ const App = () => {
                         >
                             {loadingMessage ? loadingMessage : 'Wave at Me'}
                         </button>
+
+                        {lotteryResultMessage ? (
+                            <p className={lotteryResultMessage.includes('Won') ? 'winner' : 'loser'}>
+                                {lotteryResultMessage}
+                            </p>
+                        ) : null}
+
                         {isRinkeby ? (
                             allWaves.map((wave, index) => {
                                 return (
@@ -241,7 +255,6 @@ const App = () => {
                                 <br /> Please switch to the Rinkeby network.
                             </p>
                         )}
-                        {}
                     </>
                 )}
 

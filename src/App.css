@@ -33,3 +33,17 @@
   border: 0;
   border-radius: 5px;
 }
+
+.winner {
+    color: #1a7e2b;
+    font-weight: bold;
+}
+
+.loser {
+    color: #a50034;
+    font-weight: bold;
+}
+
+.deleteButton {
+    margin-bottom: 16px;
+}
