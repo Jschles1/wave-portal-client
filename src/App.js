@@ -12,6 +12,7 @@ const App = () => {
     const [currentAccount, setCurrentAccount] = useState('');
     const [network, setNetwork] = useState('');
     const [contract, setContract] = useState('');
+    const [contractBalance, setContractBalance] = useState('');
     const [allWaves, setAllWaves] = useState([]);
     const [loadingMessage, setLoadingMessage] = useState('');
     const [isOwner, setIsOwner] = useState(false);
@@ -50,6 +51,13 @@ const App = () => {
         const signer = provider.getSigner();
         const wavePortalContract = new ethers.Contract(contractAddress, contractABI, signer);
         return wavePortalContract;
+    };
+
+    const getContractBalance = async () => {
+        const provider = getWeb3Provider();
+        const balance = await provider.getBalance(contractAddress);
+        const formattedBalance = ethers.utils.formatEther(balance.toNumber());
+        setContractBalance(formattedBalance);
     };
 
     const getAllWaves = async () => {
@@ -178,8 +186,8 @@ const App = () => {
     useEffect(() => {
         if (contract) {
             getAllWaves();
-
             checkIsOwner();
+            getContractBalance();
 
             contract.on('NewWave', (_address, _timestamp, _message, isWinner) => {
                 setLoadingMessage('');
@@ -218,6 +226,13 @@ const App = () => {
                         <p className="bio">I'm John. Connect your Ethereum wallet and wave at me!</p>
                     </>
                 )}
+
+                {contractBalance !== '' ? (
+                    <div className="lottery">
+                        <p>Lottery Jackpot:</p>
+                        <h2>{contractBalance} ETH</h2>
+                    </div>
+                ) : null}
 
                 {!!currentAccount && (
                     <>
