@@ -204,80 +204,79 @@ const App = () => {
 
     const disableWaveButton = !isRinkeby || !!loadingMessage || !contractBalance;
 
+    const renderOwnerContent = () => (
+        <>
+            <div className="header">Welcome back John!</div>
+            <button className="deleteButton" onClick={deleteWaves} disabled={!isRinkeby || !!loadingMessage}>
+                Delete Waves
+            </button>
+        </>
+    );
+
+    const renderUserContent = () => (
+        <>
+            <div className="header">
+                <span role="img" aria-label="wave">
+                    👋
+                </span>{' '}
+                Hey there!
+            </div>
+
+            <p className="bio">
+                I'm John. Connect your Ethereum wallet and wave at me!
+                <br />
+                Every wave gives you a chance to win ETH!
+            </p>
+        </>
+    );
+
+    const renderLotteryContent = () => (
+        <div className="lottery">
+            <p>Lottery Jackpot:</p>
+            <h2>{contractBalance} ETH</h2>
+        </div>
+    );
+
+    const renderConnectedContent = () => (
+        <>
+            <textarea {...register('message')} name="message" />
+            <button className="waveButton" onClick={handleSubmit(wave)} disabled={disableWaveButton}>
+                {loadingMessage ? loadingMessage : 'Wave at Me'}
+            </button>
+
+            {lotteryResultMessage ? (
+                <p className={lotteryResultMessage.includes('Won') ? 'winner' : 'loser'}>{lotteryResultMessage}</p>
+            ) : null}
+
+            {isRinkeby ? (
+                allWaves.map((wave, index) => {
+                    return (
+                        <div key={index} style={{ backgroundColor: 'OldLace', marginTop: '16px', padding: '8px' }}>
+                            <div>Address: {wave.address}</div>
+                            <div>Time: {wave.timestamp.toString()}</div>
+                            <div>Message: {wave.message}</div>
+                        </div>
+                    );
+                })
+            ) : (
+                <p style={{ textAlign: 'center', color: 'red', lineHeight: '30px' }}>
+                    You must be connected to the Rinkeby network to use this application.
+                    <br /> Please switch to the Rinkeby network.
+                </p>
+            )}
+        </>
+    );
+
     return (
         <div className="mainContainer">
             <div className="dataContainer">
-                {isOwner ? (
-                    <>
-                        <div className="header">Welcome back John!</div>
-                        <button
-                            className="deleteButton"
-                            onClick={deleteWaves}
-                            disabled={!isRinkeby || !!loadingMessage}
-                        >
-                            Delete Waves
-                        </button>
-                    </>
+                {isOwner ? renderOwnerContent() : renderUserContent()}
+
+                {contractBalance !== '' ? renderLotteryContent() : null}
+
+                {!!currentAccount ? (
+                    renderConnectedContent()
                 ) : (
-                    <>
-                        <div className="header">
-                            <span role="img" aria-label="wave">
-                                👋
-                            </span>{' '}
-                            Hey there!
-                        </div>
-
-                        <p className="bio">
-                            I'm John. Connect your Ethereum wallet and wave at me!
-                            <br />
-                            Every wave gives you a chance to win ETH!
-                        </p>
-                    </>
-                )}
-
-                {contractBalance !== '' ? (
-                    <div className="lottery">
-                        <p>Lottery Jackpot:</p>
-                        <h2>{contractBalance} ETH</h2>
-                    </div>
-                ) : null}
-
-                {!!currentAccount && (
-                    <>
-                        <textarea {...register('message')} name="message" />
-                        <button className="waveButton" onClick={handleSubmit(wave)} disabled={disableWaveButton}>
-                            {loadingMessage ? loadingMessage : 'Wave at Me'}
-                        </button>
-
-                        {lotteryResultMessage ? (
-                            <p className={lotteryResultMessage.includes('Won') ? 'winner' : 'loser'}>
-                                {lotteryResultMessage}
-                            </p>
-                        ) : null}
-
-                        {isRinkeby ? (
-                            allWaves.map((wave, index) => {
-                                return (
-                                    <div
-                                        key={index}
-                                        style={{ backgroundColor: 'OldLace', marginTop: '16px', padding: '8px' }}
-                                    >
-                                        <div>Address: {wave.address}</div>
-                                        <div>Time: {wave.timestamp.toString()}</div>
-                                        <div>Message: {wave.message}</div>
-                                    </div>
-                                );
-                            })
-                        ) : (
-                            <p style={{ textAlign: 'center', color: 'red', lineHeight: '30px' }}>
-                                You must be connected to the Rinkeby network to use this application.
-                                <br /> Please switch to the Rinkeby network.
-                            </p>
-                        )}
-                    </>
-                )}
-
-                {!currentAccount && (
                     <button className="waveButton" onClick={connectWallet}>
                         Connect Wallet
                     </button>
