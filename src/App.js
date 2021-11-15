@@ -88,6 +88,8 @@ const App = () => {
             if (currentAccount.toUpperCase() === owner.toUpperCase()) {
                 setIsOwner(true);
             }
+        } else {
+            setIsOwner(false);
         }
     };
 
@@ -181,13 +183,13 @@ const App = () => {
 
     useEffect(() => {
         checkIfWalletIsConnected();
+        getContractBalance();
     }, []);
 
     useEffect(() => {
         if (contract) {
             getAllWaves();
             checkIsOwner();
-            getContractBalance();
 
             contract.on('NewWave', (_address, _timestamp, _message, isWinner) => {
                 setLoadingMessage('');
@@ -199,6 +201,8 @@ const App = () => {
             contract.on('RandomNumberRequested', () => setLoadingMessage('Generating Lottery Result...'));
         }
     }, [contract]);
+
+    const disableWaveButton = !isRinkeby || !!loadingMessage || !contractBalance;
 
     return (
         <div className="mainContainer">
@@ -223,7 +227,11 @@ const App = () => {
                             Hey there!
                         </div>
 
-                        <p className="bio">I'm John. Connect your Ethereum wallet and wave at me!</p>
+                        <p className="bio">
+                            I'm John. Connect your Ethereum wallet and wave at me!
+                            <br />
+                            Every wave gives you a chance to win ETH!
+                        </p>
                     </>
                 )}
 
@@ -237,11 +245,7 @@ const App = () => {
                 {!!currentAccount && (
                     <>
                         <textarea {...register('message')} name="message" />
-                        <button
-                            className="waveButton"
-                            onClick={handleSubmit(wave)}
-                            disabled={!isRinkeby || !!loadingMessage}
-                        >
+                        <button className="waveButton" onClick={handleSubmit(wave)} disabled={disableWaveButton}>
                             {loadingMessage ? loadingMessage : 'Wave at Me'}
                         </button>
 
