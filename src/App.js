@@ -1,10 +1,12 @@
+/* eslint-disable jsx-a11y/accessible-emoji */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { ethers } from 'ethers';
-import { Flex, Button, Textarea, Text, Box } from '@chakra-ui/react';
+import { Flex, Textarea, Text, Box } from '@chakra-ui/react';
 import './App.css';
 import abi from './utils/WavePortal.json';
+import Button from './components/Button';
 
 const contractAddress = '0xa0d51d2522EdE93EC56c42C3bc152a2f43460F7b';
 const contractABI = abi.abi;
@@ -207,7 +209,12 @@ const App = () => {
 
     const renderOwnerContent = () => (
         <>
-            <Box className="header">Welcome back John!</Box>
+            <Box className="header">
+                <Text as="span" role="img" aria-label="wave">
+                    👋
+                </Text>{' '}
+                Welcome back John!
+            </Box>
             <Button className="deleteButton" onClick={deleteWaves} disabled={!isRinkeby || !!loadingMessage}>
                 Delete Waves
             </Button>
@@ -217,9 +224,9 @@ const App = () => {
     const renderUserContent = () => (
         <>
             <Box className="header">
-                <span role="img" aria-label="wave">
+                <Text as="span" role="img" aria-label="wave">
                     👋
-                </span>{' '}
+                </Text>{' '}
                 Hey there!
             </Box>
 
@@ -233,8 +240,8 @@ const App = () => {
 
     const renderLotteryContent = () => (
         <Box className="lottery">
-            <p>Lottery Jackpot:</p>
-            <h2>{contractBalance} ETH</h2>
+            <Text>Lottery Jackpot:</Text>
+            <Text fontSize="2xl">{contractBalance} ETH</Text>
         </Box>
     );
 
@@ -246,31 +253,33 @@ const App = () => {
             </Button>
 
             {lotteryResultMessage ? (
-                <p className={lotteryResultMessage.includes('Won') ? 'winner' : 'loser'}>{lotteryResultMessage}</p>
+                <Text className={lotteryResultMessage.includes('Won') ? 'winner' : 'loser'}>
+                    {lotteryResultMessage}
+                </Text>
             ) : null}
 
             {isRinkeby ? (
                 allWaves.map((wave, index) => {
                     return (
-                        <div key={index} style={{ backgroundColor: 'OldLace', marginTop: '16px', padding: '8px' }}>
-                            <div>Address: {wave.address}</div>
-                            <div>Time: {wave.timestamp.toString()}</div>
-                            <div>Message: {wave.message}</div>
-                        </div>
+                        <Box key={index} mt="18px" p="16px" bgColor="main.200" borderRadius="lg">
+                            <Text>Address: {wave.address}</Text>
+                            <Text>Time: {wave.timestamp.toString()}</Text>
+                            <Text>Message: {wave.message}</Text>
+                        </Box>
                     );
                 })
             ) : (
-                <p style={{ textAlign: 'center', color: 'red', lineHeight: '30px' }}>
+                <Text style={{ textAlign: 'center', color: 'red', lineHeight: '30px' }}>
                     You must be connected to the Rinkeby network to use this application.
                     <br /> Please switch to the Rinkeby network.
-                </p>
+                </Text>
             )}
         </>
     );
 
     return (
-        <div className="mainContainer">
-            <div className="dataContainer">
+        <Flex justifyContent="center" width="100%" mt="64px">
+            <Flex direction="column" justifyContent="center" maxW="600px">
                 {isOwner ? renderOwnerContent() : renderUserContent()}
 
                 {contractBalance !== '' ? renderLotteryContent() : null}
@@ -282,8 +291,8 @@ const App = () => {
                         Connect Wallet
                     </Button>
                 )}
-            </div>
-        </div>
+            </Flex>
+        </Flex>
     );
 };
 
