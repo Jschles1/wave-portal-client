@@ -29,9 +29,10 @@ const CustomButton = ({ type, onClick, children }) => {
             border={0}
             h="45px"
             mx="auto"
+            my="16px"
             width="auto"
             px="40px"
-            borderRadius="lg"
+            borderRadius="20px"
             cursor="pointer"
             fontSize="16px"
             fontWeight="bold"
