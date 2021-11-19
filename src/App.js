@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { ethers } from 'ethers';
+import { Flex, Button, Textarea, Text, Box } from '@chakra-ui/react';
 import './App.css';
 import abi from './utils/WavePortal.json';
 
@@ -206,43 +207,43 @@ const App = () => {
 
     const renderOwnerContent = () => (
         <>
-            <div className="header">Welcome back John!</div>
-            <button className="deleteButton" onClick={deleteWaves} disabled={!isRinkeby || !!loadingMessage}>
+            <Box className="header">Welcome back John!</Box>
+            <Button className="deleteButton" onClick={deleteWaves} disabled={!isRinkeby || !!loadingMessage}>
                 Delete Waves
-            </button>
+            </Button>
         </>
     );
 
     const renderUserContent = () => (
         <>
-            <div className="header">
+            <Box className="header">
                 <span role="img" aria-label="wave">
                     👋
                 </span>{' '}
                 Hey there!
-            </div>
+            </Box>
 
-            <p className="bio">
+            <Text className="bio">
                 I'm John. Connect your Ethereum wallet and wave at me!
                 <br />
                 Every wave gives you a chance to win ETH!
-            </p>
+            </Text>
         </>
     );
 
     const renderLotteryContent = () => (
-        <div className="lottery">
+        <Box className="lottery">
             <p>Lottery Jackpot:</p>
             <h2>{contractBalance} ETH</h2>
-        </div>
+        </Box>
     );
 
     const renderConnectedContent = () => (
         <>
-            <textarea {...register('message')} name="message" />
-            <button className="waveButton" onClick={handleSubmit(wave)} disabled={disableWaveButton}>
+            <Textarea {...register('message')} name="message" />
+            <Button className="waveButton" onClick={handleSubmit(wave)} disabled={disableWaveButton}>
                 {loadingMessage ? loadingMessage : 'Wave at Me'}
-            </button>
+            </Button>
 
             {lotteryResultMessage ? (
                 <p className={lotteryResultMessage.includes('Won') ? 'winner' : 'loser'}>{lotteryResultMessage}</p>
@@ -277,9 +278,9 @@ const App = () => {
                 {!!currentAccount ? (
                     renderConnectedContent()
                 ) : (
-                    <button className="waveButton" onClick={connectWallet}>
+                    <Button className="waveButton" onClick={connectWallet}>
                         Connect Wallet
-                    </button>
+                    </Button>
                 )}
             </div>
         </div>

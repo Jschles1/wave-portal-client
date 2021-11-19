@@ -2,7 +2,6 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { ChakraProvider, extendTheme } from '@chakra-ui/react';
 import theme from '@chakra-ui/theme';
-import './index.css';
 import App from './App';
 
 const customTheme = extendTheme({
@@ -13,6 +12,7 @@ const customTheme = extendTheme({
             ...theme.styles.global,
             body: {
                 ...theme.styles.global.body,
+                fontFamily: 'BlinkMacSystemFont',
                 bg: '#0d1116',
                 color: 'white',
                 overflowX: 'hidden',
