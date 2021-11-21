@@ -4,7 +4,6 @@ import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { ethers } from 'ethers';
 import { Flex, Textarea, Text, Box } from '@chakra-ui/react';
-import './App.css';
 import abi from './utils/WavePortal.json';
 import Button from './components/Button';
 import Layout from './components/Layout';
