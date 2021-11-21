@@ -29,7 +29,7 @@ export const getWeb3Provider = (dispatch) => {
     return provider;
 };
 
-export const getContract = (dispatch) => {
+export const getWavePortalContract = (dispatch) => {
     const provider = getWeb3Provider(dispatch);
     const signer = provider.getSigner();
     const connectedContract = new ethers.Contract(CONTRACT_ADDRESS, abi.abi, signer);

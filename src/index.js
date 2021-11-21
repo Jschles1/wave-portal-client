@@ -1,8 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { Provider } from 'react-redux';
 import { ChakraProvider, extendTheme } from '@chakra-ui/react';
 import theme from '@chakra-ui/theme';
 import App from './App';
+import store from './store';
 
 const customTheme = extendTheme({
     ...theme,
@@ -30,7 +32,9 @@ const customTheme = extendTheme({
 
 ReactDOM.render(
     <ChakraProvider theme={customTheme}>
-        <App />
+        <Provider store={store}>
+            <App />
+        </Provider>
     </ChakraProvider>,
     document.getElementById('root')
 );
