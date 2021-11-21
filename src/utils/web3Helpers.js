@@ -35,3 +35,11 @@ export const getWavePortalContract = (dispatch) => {
     const connectedContract = new ethers.Contract(CONTRACT_ADDRESS, abi.abi, signer);
     return connectedContract;
 };
+
+export const fetchContractBalance = async (dispatch) => {
+    const provider = getWeb3Provider(dispatch);
+    const balance = await provider.getBalance(CONTRACT_ADDRESS);
+    const formattedBalance = ethers.utils.formatEther(balance.toNumber());
+    console.log('formatted balance', formattedBalance);
+    return formattedBalance;
+};

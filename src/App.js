@@ -3,21 +3,17 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useForm } from 'react-hook-form';
-import { ethers } from 'ethers';
 import { Flex, Textarea, Text, Box } from '@chakra-ui/react';
 import Button from './components/Button';
 import Layout from './components/Layout';
 import Menu from './components/Menu';
 import { setCurrentAccount } from './store/reducers/web3Reducer';
-import { getWeb3Provider, getWavePortalContract } from './utils/web3Helpers';
-
-const contractAddress = '0xa0d51d2522EdE93EC56c42C3bc152a2f43460F7b';
+import { getWavePortalContract, fetchContractBalance } from './utils/web3Helpers';
 
 const App = () => {
     const dispatch = useDispatch();
     const currentAccount = useSelector((state) => state.web3.currentAccount);
     const network = useSelector((state) => state.web3.network);
-    // const [contract, setContract] = useState('');
     const [contractBalance, setContractBalance] = useState('');
     const [allWaves, setAllWaves] = useState([]);
     const [loadingMessage, setLoadingMessage] = useState('');
@@ -28,9 +24,7 @@ const App = () => {
     const isRinkeby = network === 'rinkeby';
 
     const getContractBalance = async () => {
-        const provider = getWeb3Provider(dispatch);
-        const balance = await provider.getBalance(contractAddress);
-        const formattedBalance = ethers.utils.formatEther(balance.toNumber());
+        const formattedBalance = await fetchContractBalance(dispatch);
         setContractBalance(formattedBalance);
     };
 
