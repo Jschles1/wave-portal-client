@@ -7,6 +7,8 @@ import { Flex, Textarea, Text, Box } from '@chakra-ui/react';
 import './App.css';
 import abi from './utils/WavePortal.json';
 import Button from './components/Button';
+import Layout from './components/Layout';
+import Menu from './components/Menu';
 
 const contractAddress = '0xa0d51d2522EdE93EC56c42C3bc152a2f43460F7b';
 const contractABI = abi.abi;
@@ -278,20 +280,25 @@ const App = () => {
     );
 
     return (
-        <Flex justifyContent="center" width="100%" mt="64px">
-            <Flex direction="column" justifyContent="center" maxW="600px">
-                {isOwner ? renderOwnerContent() : renderUserContent()}
+        <Flex>
+            <Menu />
+            <Layout>
+                <Flex justifyContent="center" width="100%" mt="64px">
+                    <Flex direction="column" justifyContent="center" maxW="600px">
+                        {isOwner ? renderOwnerContent() : renderUserContent()}
 
-                {contractBalance !== '' ? renderLotteryContent() : null}
+                        {contractBalance !== '' ? renderLotteryContent() : null}
 
-                {!!currentAccount ? (
-                    renderConnectedContent()
-                ) : (
-                    <Button className="waveButton" onClick={connectWallet}>
-                        Connect Wallet
-                    </Button>
-                )}
-            </Flex>
+                        {!!currentAccount ? (
+                            renderConnectedContent()
+                        ) : (
+                            <Button className="waveButton" onClick={connectWallet}>
+                                Connect Wallet
+                            </Button>
+                        )}
+                    </Flex>
+                </Flex>
+            </Layout>
         </Flex>
     );
 };
