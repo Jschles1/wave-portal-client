@@ -2,66 +2,36 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { ethers } from 'ethers';
+import { useEthers, useContractFunction, useContractCall } from '@usedapp/core';
+import { ethers, utils } from 'ethers';
+import { Contract } from '@ethersproject/contracts';
 import { Flex, Textarea, Text, Box } from '@chakra-ui/react';
 import './App.css';
 import abi from './utils/WavePortal.json';
 import Button from './components/Button';
 
 const contractAddress = '0xa0d51d2522EdE93EC56c42C3bc152a2f43460F7b';
-const contractABI = abi.abi;
+// const contractABI = abi.abi;
+
+// const contract = new Contract(contractAddress, contractABI);
 
 const App = () => {
-    const [currentAccount, setCurrentAccount] = useState('');
-    const [network, setNetwork] = useState('');
-    const [contract, setContract] = useState('');
+    const contractABI = new utils.Interface(abi.abi);
+    const contract = new Contract(contractAddress, contractABI);
+    const { activateBrowserWallet, account, chainId } = useEthers();
+    const { state, send } = useContractFunction(contract, 'initializeWave');
+    const allWaves = useContractCall({ abi: contractABI, address: contractAddress, method: 'getAllWaves' });
+
+    console.log('allwaves', allWaves);
+
     const [contractBalance, setContractBalance] = useState('');
-    const [allWaves, setAllWaves] = useState([]);
+    // const [allWaves, setAllWaves] = useState([]);
     const [loadingMessage, setLoadingMessage] = useState('');
     const [isOwner, setIsOwner] = useState(false);
     const [lotteryResultMessage, setLotteryResultMessage] = useState('');
     const { register, handleSubmit } = useForm();
 
-    const isRinkeby = network === 'rinkeby';
-
-    const getWeb3Provider = () => {
-        const { ethereum } = window;
-        const provider = new ethers.providers.Web3Provider(ethereum, 'any');
-
-        provider.on('network', (newNetwork, oldNetwork) => {
-            // When a Provider makes its initial connection, it emits a "network"
-            // event with a null oldNetwork along with the newNetwork. So, if the
-            // oldNetwork exists, it represents a changing network
-            if (oldNetwork) {
-                provider.removeAllListeners();
-                window.location.reload();
-            } else {
-                setNetwork(newNetwork.name);
-            }
-        });
-
-        ethereum.on('accountsChanged', async () => {
-            const accounts = await provider.listAccounts();
-            setCurrentAccount(accounts[0] ? accounts[0] : '');
-            checkIsOwner();
-        });
-
-        return provider;
-    };
-
-    const getWavePortalContract = () => {
-        const provider = getWeb3Provider();
-        const signer = provider.getSigner();
-        const wavePortalContract = new ethers.Contract(contractAddress, contractABI, signer);
-        return wavePortalContract;
-    };
-
-    const getContractBalance = async () => {
-        const provider = getWeb3Provider();
-        const balance = await provider.getBalance(contractAddress);
-        const formattedBalance = ethers.utils.formatEther(balance.toNumber());
-        setContractBalance(formattedBalance);
-    };
+    const isRinkeby = chainId === 4;
 
     const getAllWaves = async () => {
         try {
@@ -78,7 +48,7 @@ const App = () => {
                     });
                 });
 
-                setAllWaves(wavesCleaned);
+                // setAllWaves(wavesCleaned);
             }
         } catch (error) {
             console.log(error);
@@ -88,7 +58,7 @@ const App = () => {
     const checkIsOwner = async () => {
         if (contract) {
             const owner = await contract.owner();
-            if (currentAccount.toUpperCase() === owner.toUpperCase()) {
+            if (account.toUpperCase() === owner.toUpperCase()) {
                 setIsOwner(true);
             }
         } else {
@@ -96,54 +66,54 @@ const App = () => {
         }
     };
 
-    const checkIfWalletIsConnected = async () => {
-        try {
-            const { ethereum } = window;
+    // const checkIfWalletIsConnected = async () => {
+    //     try {
+    //         const { ethereum } = window;
 
-            if (!ethereum) {
-                console.log('Make sure you have metamask!');
-                return;
-            } else {
-                console.log('We have the ethereum object', ethereum);
-            }
+    //         if (!ethereum) {
+    //             console.log('Make sure you have metamask!');
+    //             return;
+    //         } else {
+    //             console.log('We have the ethereum object', ethereum);
+    //         }
 
-            const accounts = await ethereum.request({ method: 'eth_accounts' });
+    //         const accounts = await ethereum.request({ method: 'eth_accounts' });
 
-            if (accounts.length !== 0) {
-                const account = accounts[0];
-                console.log('Found an authorized account:', account);
-                setCurrentAccount(account);
-                if (!contract) {
-                    setContract(getWavePortalContract());
-                }
-            } else {
-                console.log('No authorized account found');
-            }
-        } catch (error) {
-            console.log(error);
-        }
-    };
+    //         if (accounts.length !== 0) {
+    //             const account = accounts[0];
+    //             console.log('Found an authorized account:', account);
+    //             setCurrentAccount(account);
+    //             if (!contract) {
+    //                 setContract(getWavePortalContract());
+    //             }
+    //         } else {
+    //             console.log('No authorized account found');
+    //         }
+    //     } catch (error) {
+    //         console.log(error);
+    //     }
+    // };
 
-    const connectWallet = async () => {
-        try {
-            const { ethereum } = window;
+    // const connectWallet = async () => {
+    //     try {
+    //         const { ethereum } = window;
 
-            if (!ethereum) {
-                alert('Get MetaMask!');
-                return;
-            }
+    //         if (!ethereum) {
+    //             alert('Get MetaMask!');
+    //             return;
+    //         }
 
-            const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+    //         const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
 
-            console.log('Connected', accounts[0]);
-            setCurrentAccount(accounts[0]);
-            if (!contract) {
-                setContract(getWavePortalContract());
-            }
-        } catch (error) {
-            console.log(error);
-        }
-    };
+    //         console.log('Connected', accounts[0]);
+    //         setCurrentAccount(accounts[0]);
+    //         if (!contract) {
+    //             setContract(getWavePortalContract());
+    //         }
+    //     } catch (error) {
+    //         console.log(error);
+    //     }
+    // };
 
     const wave = async (data) => {
         const { message } = data;
@@ -152,16 +122,18 @@ const App = () => {
                 const { ethereum } = window;
 
                 if (ethereum) {
-                    let count = await contract.getTotalWaves();
-                    console.log('Retrieved total wave count...', count.toNumber());
+                    // let count = await contract.getTotalWaves();
+                    // console.log('Retrieved total wave count...', count.toNumber());
 
-                    setLoadingMessage('Mining Transaction...');
+                    // setLoadingMessage('Mining Transaction...');
 
-                    const waveTxn = await contract.initializeWave(message);
-                    console.log('Mining Wave Init...', waveTxn.hash);
+                    // const waveTxn = await contract.initializeWave(message);
+                    // console.log('Mining Wave Init...', waveTxn.hash);
 
-                    await waveTxn.wait();
-                    console.log('Wave Init Mined -- ', waveTxn.hash);
+                    // await waveTxn.wait();
+                    // console.log('Wave Init Mined -- ', waveTxn.hash);
+                    const waveTxn = await send(message);
+                    console.log('wave', waveTxn);
                 } else {
                     console.log("Ethereum object doesn't exist!");
                 }
@@ -173,7 +145,7 @@ const App = () => {
 
     const deleteWaves = async () => {
         await contract.resetWaves();
-        setAllWaves([]);
+        // setAllWaves([]);
     };
 
     const showLotteryResult = (isWiiner) => {
@@ -185,23 +157,20 @@ const App = () => {
     };
 
     useEffect(() => {
-        checkIfWalletIsConnected();
-        getContractBalance();
+        // checkIfWalletIsConnected();
+        // getContractBalance();
     }, []);
 
     useEffect(() => {
         if (contract) {
-            getAllWaves();
-            checkIsOwner();
-
-            contract.on('NewWave', (_address, _timestamp, _message, isWinner) => {
-                setLoadingMessage('');
-                getAllWaves();
-
-                showLotteryResult(isWinner);
-            });
-
-            contract.on('RandomNumberRequested', () => setLoadingMessage('Generating Lottery Result...'));
+            // getAllWaves();
+            // checkIsOwner();
+            // contract.on('NewWave', (_address, _timestamp, _message, isWinner) => {
+            //     setLoadingMessage('');
+            //     getAllWaves();
+            //     showLotteryResult(isWinner);
+            // });
+            // contract.on('RandomNumberRequested', () => setLoadingMessage('Generating Lottery Result...'));
         }
     }, [contract]);
 
@@ -258,7 +227,7 @@ const App = () => {
                 </Text>
             ) : null}
 
-            {isRinkeby ? (
+            {/* {isRinkeby ? (
                 allWaves.map((wave, index) => {
                     return (
                         <Box key={index} mt="18px" p="16px" bgColor="main.200" borderRadius="lg">
@@ -273,7 +242,7 @@ const App = () => {
                     You must be connected to the Rinkeby network to use this application.
                     <br /> Please switch to the Rinkeby network.
                 </Text>
-            )}
+            )} */}
         </>
     );
 
@@ -284,10 +253,10 @@ const App = () => {
 
                 {contractBalance !== '' ? renderLotteryContent() : null}
 
-                {!!currentAccount ? (
+                {!!account ? (
                     renderConnectedContent()
                 ) : (
-                    <Button className="waveButton" onClick={connectWallet}>
+                    <Button className="waveButton" onClick={activateBrowserWallet}>
                         Connect Wallet
                     </Button>
                 )}
