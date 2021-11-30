@@ -6,7 +6,6 @@ import { useForm } from 'react-hook-form';
 import { Flex, Textarea, Text, Box } from '@chakra-ui/react';
 import Button from './components/Button';
 import Layout from './components/Layout';
-import Menu from './components/Menu';
 import { setCurrentAccount } from './store/reducers/web3Reducer';
 import { getWavePortalContract, fetchContractBalance } from './utils/web3Helpers';
 
@@ -245,10 +244,20 @@ const App = () => {
 
     return (
         <Flex>
-            <Menu />
             <Layout>
-                <Flex justifyContent="center" width="100%" mt="64px">
+                <Flex justifyContent="center" width="100%">
                     <Flex direction="column" justifyContent="center" maxW="600px">
+                        <Text
+                            fontWeight="bold"
+                            fontSize="24px"
+                            m={0}
+                            bgGradient="linear(43deg, rgb(217, 76, 214) 12.66%, rgb(81, 182, 249) 121.19%, rgba(217, 76, 214, 0) 121.2%)"
+                            bgClip="text"
+                            textAlign="center"
+                        >
+                            Wave Portal
+                        </Text>
+
                         {isOwner ? renderOwnerContent() : renderUserContent()}
 
                         {contractBalance !== '' ? renderLotteryContent() : null}
