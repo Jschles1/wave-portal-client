@@ -10,7 +10,7 @@ import './App.css';
 import abi from './utils/WavePortal.json';
 import Button from './components/Button';
 
-const contractAddress = '0xa0d51d2522EdE93EC56c42C3bc152a2f43460F7b';
+const contractAddress = '0xE1cfbFC60Ce1785EBBFD3127F5762604e1d990F6';
 // const contractABI = abi.abi;
 
 // const contract = new Contract(contractAddress, contractABI);
@@ -19,10 +19,29 @@ const App = () => {
     const contractABI = new utils.Interface(abi.abi);
     const contract = new Contract(contractAddress, contractABI);
     const { activateBrowserWallet, account, chainId } = useEthers();
-    const { state, send } = useContractFunction(contract, 'initializeWave');
+    const { state: waveTransactionState, send: sendWave, events } = useContractFunction(contract, 'initializeWave');
+    const { state, send, events: finishEvents } = useContractFunction(contract, 'finishWave');
+    const {
+        state: fulfillState,
+        send: fulfillSend,
+        events: fulfillEvents,
+    } = useContractFunction(contract, 'fulfillRandomness');
     const allWaves = useContractCall({ abi: contractABI, address: contractAddress, method: 'getAllWaves' });
+    const formattedAllWaves =
+        allWaves && allWaves.length
+            ? allWaves[0].map((wave) => ({
+                  message: wave.message,
+                  address: wave.waver,
+                  timestamp: wave.timestamp,
+              }))
+            : [];
 
-    console.log('allwaves', allWaves);
+    console.log('init wave state', waveTransactionState);
+    console.log('finish wave state', state);
+    console.log('f state', fulfillState);
+
+    console.log('events', events);
+    console.log('finishEvents', finishEvents);
 
     const [contractBalance, setContractBalance] = useState('');
     // const [allWaves, setAllWaves] = useState([]);
@@ -132,7 +151,7 @@ const App = () => {
 
                     // await waveTxn.wait();
                     // console.log('Wave Init Mined -- ', waveTxn.hash);
-                    const waveTxn = await send(message);
+                    const waveTxn = await sendWave(message);
                     console.log('wave', waveTxn);
                 } else {
                     console.log("Ethereum object doesn't exist!");
@@ -227,8 +246,8 @@ const App = () => {
                 </Text>
             ) : null}
 
-            {/* {isRinkeby ? (
-                allWaves.map((wave, index) => {
+            {isRinkeby ? (
+                formattedAllWaves.map((wave, index) => {
                     return (
                         <Box key={index} mt="18px" p="16px" bgColor="main.200" borderRadius="lg">
                             <Text>Address: {wave.address}</Text>
@@ -242,7 +261,7 @@ const App = () => {
                     You must be connected to the Rinkeby network to use this application.
                     <br /> Please switch to the Rinkeby network.
                 </Text>
-            )} */}
+            )}
         </>
     );
 
