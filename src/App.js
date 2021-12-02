@@ -69,8 +69,6 @@ const App = () => {
             if (!ethereum) {
                 console.log('Make sure you have metamask!');
                 return;
-            } else {
-                console.log('We have the ethereum object', ethereum);
             }
 
             const accounts = await ethereum.request({ method: 'eth_accounts' });
@@ -176,7 +174,7 @@ const App = () => {
 
     const renderOwnerContent = () => (
         <>
-            <Box className="header">
+            <Box textAlign="center">
                 <Text as="span" role="img" aria-label="wave">
                     👋
                 </Text>{' '}
@@ -206,7 +204,7 @@ const App = () => {
     );
 
     const renderLotteryContent = () => (
-        <Box className="lottery">
+        <Box textAlign="center">
             <Text>Lottery Jackpot:</Text>
             <Text fontSize="2xl">{contractBalance} ETH</Text>
         </Box>
@@ -262,7 +260,7 @@ const App = () => {
 
                         {isOwner ? renderOwnerContent() : renderUserContent()}
 
-                        {contractBalance !== '' ? renderLotteryContent() : null}
+                        {currentAccount && contractBalance !== '' ? renderLotteryContent() : null}
 
                         {!!currentAccount ? (
                             renderConnectedContent()
