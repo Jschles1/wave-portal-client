@@ -174,13 +174,13 @@ const App = () => {
 
     const renderOwnerContent = () => (
         <>
-            <Box textAlign="center">
+            <Box textAlign="center" mt="16px" fontSize="20px">
                 <Text as="span" role="img" aria-label="wave">
                     👋
                 </Text>{' '}
                 Welcome back John!
             </Box>
-            <Button className="deleteButton" onClick={deleteWaves} disabled={!isRinkeby || !!loadingMessage}>
+            <Button onClick={deleteWaves} disabled={!isRinkeby || !!loadingMessage}>
                 Delete Waves
             </Button>
         </>
@@ -188,14 +188,14 @@ const App = () => {
 
     const renderUserContent = () => (
         <>
-            <Box className="header">
+            <Box fontSize="20px">
                 <Text as="span" role="img" aria-label="wave">
                     👋
                 </Text>{' '}
                 Hey there!
             </Box>
 
-            <Text className="bio">
+            <Text>
                 I'm John. Connect your Ethereum wallet and wave at me!
                 <br />
                 Every wave gives you a chance to win ETH!
@@ -204,8 +204,8 @@ const App = () => {
     );
 
     const renderLotteryContent = () => (
-        <Box textAlign="center">
-            <Text>Lottery Jackpot:</Text>
+        <Box textAlign="center" mb="16px">
+            <Text>Lottery Prize Pool:</Text>
             <Text fontSize="2xl">{contractBalance} ETH</Text>
         </Box>
     );
@@ -213,20 +213,16 @@ const App = () => {
     const renderConnectedContent = () => (
         <>
             <Textarea {...register('message')} name="message" />
-            <Button className="waveButton" onClick={handleSubmit(wave)} disabled={disableWaveButton}>
+            <Button onClick={handleSubmit(wave)} disabled={disableWaveButton}>
                 {loadingMessage ? loadingMessage : 'Wave at Me'}
             </Button>
 
-            {lotteryResultMessage ? (
-                <Text className={lotteryResultMessage.includes('Won') ? 'winner' : 'loser'}>
-                    {lotteryResultMessage}
-                </Text>
-            ) : null}
+            {lotteryResultMessage ? <Text>{lotteryResultMessage}</Text> : null}
 
             {isRinkeby ? (
                 allWaves.map((wave, index) => {
                     return (
-                        <Box key={index} mt="18px" p="16px" bgColor="main.200" borderRadius="lg">
+                        <Box key={index} mb="16px" p="16px" bgColor="main.200" borderRadius="lg">
                             <Text>Address: {wave.address}</Text>
                             <Text>Time: {wave.timestamp.toString()}</Text>
                             <Text>Message: {wave.message}</Text>
@@ -249,7 +245,7 @@ const App = () => {
                     <Flex direction="column" justifyContent="center" maxW="600px">
                         <Text
                             fontWeight="bold"
-                            fontSize="24px"
+                            fontSize="36px"
                             m={0}
                             bgGradient="linear(43deg, rgb(217, 76, 214) 12.66%, rgb(81, 182, 249) 121.19%, rgba(217, 76, 214, 0) 121.2%)"
                             bgClip="text"
@@ -265,9 +261,7 @@ const App = () => {
                         {!!currentAccount ? (
                             renderConnectedContent()
                         ) : (
-                            <Button className="waveButton" onClick={connectWallet}>
-                                Connect Wallet
-                            </Button>
+                            <Button onClick={connectWallet}>Connect Wallet</Button>
                         )}
                     </Flex>
                 </Flex>
