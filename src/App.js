@@ -139,8 +139,8 @@ const App = () => {
         setAllWaves([]);
     };
 
-    const showLotteryResult = (isWiiner) => {
-        if (isWiiner) {
+    const showLotteryResult = (isWinner) => {
+        if (isWinner) {
             setLotteryResultMessage('Congrats! You Won!');
         } else {
             setLotteryResultMessage('Sorry, you lost.');
@@ -159,9 +159,11 @@ const App = () => {
 
             const contract = getWavePortalContract(dispatch);
 
-            contract.on('NewWave', (_address, _timestamp, _message, isWinner) => {
+            contract.on('NewWave', (_address, _timestamp, _message, random) => {
                 setLoadingMessage('');
                 getAllWaves();
+
+                const isWinner = random.toNumber() <= 50;
 
                 showLotteryResult(isWinner);
             });
