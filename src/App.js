@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useForm } from 'react-hook-form';
-import { Flex, Textarea, Text, Box } from '@chakra-ui/react';
+import { Flex, Textarea, Text, Box, Tabs, TabList, TabPanels, Tab, TabPanel } from '@chakra-ui/react';
 import Button from './components/Button';
 import Layout from './components/Layout';
 import { setCurrentAccount } from './store/reducers/web3Reducer';
@@ -139,7 +139,7 @@ const App = () => {
 
     const showLotteryResult = (isWinner) => {
         if (isWinner) {
-            setLotteryResultMessage('Congrats! You Won!');
+            setLotteryResultMessage('Congrats! You Won 0.0001 ETH!');
         } else {
             setLotteryResultMessage('Sorry, you lost.');
         }
@@ -174,7 +174,7 @@ const App = () => {
 
     const renderOwnerContent = () => (
         <>
-            <Box textAlign="center" mt="16px" fontSize="20px">
+            <Box textAlign="center" mt="16px" fontSize="24px">
                 <Text as="span" role="img" aria-label="wave">
                     👋
                 </Text>{' '}
@@ -188,14 +188,14 @@ const App = () => {
 
     const renderUserContent = () => (
         <>
-            <Box fontSize="20px">
+            <Box textAlign="center" mt="16px" fontSize="24px">
                 <Text as="span" role="img" aria-label="wave">
                     👋
                 </Text>{' '}
                 Hey there!
             </Box>
 
-            <Text>
+            <Text as="p" my="16px" textAlign="center">
                 I'm John. Connect your Ethereum wallet and wave at me!
                 <br />
                 Every wave gives you a chance to win ETH!
@@ -219,22 +219,15 @@ const App = () => {
 
             {lotteryResultMessage ? <Text>{lotteryResultMessage}</Text> : null}
 
-            {isRinkeby ? (
-                allWaves.map((wave, index) => {
-                    return (
-                        <Box key={index} mb="16px" p="16px" bgColor="main.200" borderRadius="lg">
-                            <Text>Address: {wave.address}</Text>
-                            <Text>Time: {wave.timestamp.toString()}</Text>
-                            <Text>Message: {wave.message}</Text>
-                        </Box>
-                    );
-                })
-            ) : (
-                <Text style={{ textAlign: 'center', color: 'red', lineHeight: '30px' }}>
-                    You must be connected to the Rinkeby network to use this application.
-                    <br /> Please switch to the Rinkeby network.
-                </Text>
-            )}
+            {allWaves.map((wave, index) => {
+                return (
+                    <Box key={index} mb="16px" p="16px" bgColor="main.200" borderRadius="lg">
+                        <Text>Address: {wave.address}</Text>
+                        <Text>Time: {wave.timestamp.toString()}</Text>
+                        <Text>Message: {wave.message}</Text>
+                    </Box>
+                );
+            })}
         </>
     );
 
@@ -242,7 +235,7 @@ const App = () => {
         <Flex>
             <Layout>
                 <Flex justifyContent="center" width="100%">
-                    <Flex direction="column" justifyContent="center" maxW="600px">
+                    <Flex direction="column" justifyContent="center" maxW="700px">
                         <Text
                             fontWeight="bold"
                             fontSize="36px"
@@ -254,14 +247,23 @@ const App = () => {
                             Wave Portal
                         </Text>
 
-                        {isOwner ? renderOwnerContent() : renderUserContent()}
+                        {isRinkeby ? (
+                            <>
+                                {isOwner ? renderOwnerContent() : renderUserContent()}
 
-                        {currentAccount && contractBalance !== '' ? renderLotteryContent() : null}
+                                {currentAccount && contractBalance !== '' ? renderLotteryContent() : null}
 
-                        {!!currentAccount ? (
-                            renderConnectedContent()
+                                {!!currentAccount ? (
+                                    renderConnectedContent()
+                                ) : (
+                                    <Button onClick={connectWallet}>Connect Wallet</Button>
+                                )}
+                            </>
                         ) : (
-                            <Button onClick={connectWallet}>Connect Wallet</Button>
+                            <Text style={{ textAlign: 'center', color: 'red', lineHeight: '30px' }}>
+                                You must be connected to the Ethereum Rinkeby test network to use this application.
+                                <br /> Please switch to the Rinkeby network.
+                            </Text>
                         )}
                     </Flex>
                 </Flex>
