@@ -3,9 +3,10 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useForm } from 'react-hook-form';
-import { Flex, Textarea, Text, Box, Tabs, TabList, TabPanels, Tab, TabPanel } from '@chakra-ui/react';
+import { Flex, Textarea, Text, Box } from '@chakra-ui/react';
 import Button from './components/Button';
 import Layout from './components/Layout';
+import Card from './components/Card';
 import { setCurrentAccount } from './store/reducers/web3Reducer';
 import { getWavePortalContract, fetchContractBalance } from './utils/web3Helpers';
 
@@ -173,7 +174,7 @@ const App = () => {
     const disableWaveButton = !isRinkeby || !!loadingMessage || !contractBalance;
 
     const renderOwnerContent = () => (
-        <>
+        <Card>
             <Box textAlign="center" mt="16px" fontSize="24px">
                 <Text as="span" role="img" aria-label="wave">
                     👋
@@ -183,11 +184,11 @@ const App = () => {
             <Button onClick={deleteWaves} disabled={!isRinkeby || !!loadingMessage}>
                 Delete Waves
             </Button>
-        </>
+        </Card>
     );
 
     const renderUserContent = () => (
-        <>
+        <Card>
             <Box textAlign="center" mt="16px" fontSize="24px">
                 <Text as="span" role="img" aria-label="wave">
                     👋
@@ -200,34 +201,46 @@ const App = () => {
                 <br />
                 Every wave gives you a chance to win ETH!
             </Text>
-        </>
+        </Card>
     );
 
     const renderLotteryContent = () => (
-        <Box textAlign="center" mb="16px">
-            <Text>Lottery Prize Pool:</Text>
-            <Text fontSize="2xl">{contractBalance} ETH</Text>
-        </Box>
+        <Card>
+            <Box textAlign="center">
+                <Text>Lottery Prize Pool:</Text>
+                <Text fontSize="2xl">{contractBalance} ETH</Text>
+            </Box>
+        </Card>
     );
 
     const renderConnectedContent = () => (
         <>
-            <Textarea {...register('message')} name="message" />
-            <Button onClick={handleSubmit(wave)} disabled={disableWaveButton}>
-                {loadingMessage ? loadingMessage : 'Wave at Me'}
-            </Button>
+            <Card>
+                <Textarea {...register('message')} name="message" />
+                <Button onClick={handleSubmit(wave)} disabled={disableWaveButton}>
+                    {loadingMessage ? loadingMessage : 'Wave at Me'}
+                </Button>
 
-            {lotteryResultMessage ? <Text>{lotteryResultMessage}</Text> : null}
+                {lotteryResultMessage ? <Text>{lotteryResultMessage}</Text> : null}
+            </Card>
 
-            {allWaves.map((wave, index) => {
-                return (
-                    <Box key={index} mb="16px" p="16px" bgColor="main.200" borderRadius="lg">
-                        <Text>Address: {wave.address}</Text>
-                        <Text>Time: {wave.timestamp.toString()}</Text>
-                        <Text>Message: {wave.message}</Text>
-                    </Box>
-                );
-            })}
+            <Card>
+                {allWaves.map((wave, index) => {
+                    return (
+                        <Box
+                            key={index}
+                            mb={index === allWaves.length - 1 ? '0' : '16px'}
+                            p="16px"
+                            bgColor="main.200"
+                            borderRadius="lg"
+                        >
+                            <Text>Address: {wave.address}</Text>
+                            <Text>Time: {wave.timestamp.toString()}</Text>
+                            <Text>Message: {wave.message}</Text>
+                        </Box>
+                    );
+                })}
+            </Card>
         </>
     );
 
