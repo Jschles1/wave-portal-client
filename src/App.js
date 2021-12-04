@@ -55,8 +55,11 @@ const App = () => {
         const contract = getWavePortalContract(dispatch);
         if (contract) {
             const owner = await contract.owner();
+
             if (currentAccount.toUpperCase() === owner.toUpperCase()) {
                 setIsOwner(true);
+            } else {
+                setIsOwner(false);
             }
         } else {
             setIsOwner(false);
@@ -104,6 +107,19 @@ const App = () => {
         }
     };
 
+    const onChangeAccount = async () => {
+        if (window.ethereum) {
+            await window.ethereum.request({
+                method: 'wallet_requestPermissions',
+                params: [
+                    {
+                        eth_accounts: {},
+                    },
+                ],
+            });
+        }
+    };
+
     const wave = async (data) => {
         const { message } = data;
         if (message) {
@@ -147,6 +163,14 @@ const App = () => {
     };
 
     useEffect(() => {
+        if (currentAccount) {
+            checkIsOwner();
+        } else {
+            setIsOwner(false);
+        }
+    }, [currentAccount]);
+
+    useEffect(() => {
         checkIfWalletIsConnected();
         getContractBalance();
     }, []);
@@ -182,8 +206,9 @@ const App = () => {
                 Welcome back John!
             </Box>
             <Button onClick={deleteWaves} disabled={!isRinkeby || !!loadingMessage}>
-                Delete Waves
+                Delete All Waves
             </Button>
+            <Button onClick={onChangeAccount}>Change Account</Button>
         </Card>
     );
 
@@ -201,6 +226,8 @@ const App = () => {
                 <br />
                 Every wave gives you a chance to win ETH!
             </Text>
+
+            {!!currentAccount ? <Button onClick={onChangeAccount}>Change Account</Button> : null}
         </Card>
     );
 
