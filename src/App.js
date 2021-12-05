@@ -21,7 +21,7 @@ const App = () => {
     const [loadingMessage, setLoadingMessage] = useState('');
     const [isOwner, setIsOwner] = useState(false);
     const [lotteryResultMessage, setLotteryResultMessage] = useState('');
-    const { register, handleSubmit } = useForm();
+    const { register, handleSubmit, reset } = useForm();
 
     const isRinkeby = network === 'rinkeby';
 
@@ -157,11 +157,14 @@ const App = () => {
         setAllWaves([]);
     };
 
-    const showLotteryResult = (isWinner) => {
-        if (isWinner) {
-            setLotteryResultMessage('🎉 Congrats! You Won 0.0001 ETH! 🎉');
-        } else {
-            setLotteryResultMessage('Sorry, you lost.');
+    const showLotteryResult = (isWinner, address) => {
+        if (currentAccount.toLowerCase() === address.toLowerCase()) {
+            if (isWinner) {
+                setLotteryResultMessage('🎉 Congrats! You Won 0.0001 ETH! 🎉');
+                getContractBalance();
+            } else {
+                setLotteryResultMessage('Sorry, you lost.');
+            }
         }
     };
 
@@ -185,14 +188,15 @@ const App = () => {
 
             const contract = getWavePortalContract(dispatch);
 
-            contract.on('NewWave', (_address, _timestamp, _message, random) => {
+            contract.on('NewWave', (address, _timestamp, _message, random) => {
                 console.log('New Wave received: ', random);
+                reset({ message: '' });
                 setLoadingMessage('');
                 getAllWaves();
 
                 const isWinner = random.toNumber() <= 50;
 
-                showLotteryResult(isWinner);
+                showLotteryResult(isWinner, address);
             });
 
             contract.on('RandomNumberRequested', () => setLoadingMessage('Generating Lottery Result...'));
