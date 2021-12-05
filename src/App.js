@@ -239,11 +239,11 @@ const App = () => {
         </Card>
     );
 
-    const renderLotteryContent = () => (
+    const renderPrizePool = () => (
         <Card>
             <Box textAlign="center">
                 <GradientText textAlign="center" fontSize="24px" mb="8px">
-                    Lottery Prize Pool:
+                    Prize Pool:
                 </GradientText>
                 <Text fontSize="2xl">{contractBalance} ETH</Text>
             </Box>
@@ -319,7 +319,7 @@ const App = () => {
                             <>
                                 {isOwner ? renderOwnerContent() : renderUserContent()}
 
-                                {currentAccount && contractBalance !== '' ? renderLotteryContent() : null}
+                                {currentAccount && contractBalance !== '' ? renderPrizePool() : null}
 
                                 {!!currentAccount ? (
                                     renderConnectedContent()
