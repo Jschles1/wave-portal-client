@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, keyframes } from '@chakra-ui/react';
 
-const CustomButton = ({ type, onClick, children }) => {
+const CustomButton = ({ disabled, onClick, children }) => {
     const gradient = 'linear(43deg, rgb(217, 76, 214) 12.66%, rgb(81, 182, 249) 121.19%, rgba(217, 76, 214, 0) 121.2%)';
 
     const gradientAnimation = keyframes`
@@ -20,6 +20,7 @@ const CustomButton = ({ type, onClick, children }) => {
 
     return (
         <Button
+            disabled={disabled}
             display="block"
             variant="outline"
             onClick={onClick}

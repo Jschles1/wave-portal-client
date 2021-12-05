@@ -134,6 +134,7 @@ const App = () => {
                     console.log('Retrieved total wave count...', count.toNumber());
 
                     setLoadingMessage('Mining Transaction...');
+                    setLotteryResultMessage('');
 
                     const waveTxn = await contract.initializeWave(message);
                     console.log('Mining Wave Init...', waveTxn.hash);
@@ -158,7 +159,7 @@ const App = () => {
 
     const showLotteryResult = (isWinner) => {
         if (isWinner) {
-            setLotteryResultMessage('Congrats! You Won 0.0001 ETH!');
+            setLotteryResultMessage('🎉 Congrats! You Won 0.0001 ETH! 🎉');
         } else {
             setLotteryResultMessage('Sorry, you lost.');
         }
@@ -185,6 +186,7 @@ const App = () => {
             const contract = getWavePortalContract(dispatch);
 
             contract.on('NewWave', (_address, _timestamp, _message, random) => {
+                console.log('New Wave received: ', random);
                 setLoadingMessage('');
                 getAllWaves();
 
@@ -244,56 +246,61 @@ const App = () => {
         </Card>
     );
 
-    const renderConnectedContent = () => (
-        <>
-            <Card>
-                <GradientText textAlign="center" fontSize="24px" mb="8px">
-                    Send a Wave:
-                </GradientText>
-                <Textarea
-                    {...register('message')}
-                    name="message"
-                    placeholder="👋 gm!"
-                    _focus={{
-                        outline: 'none',
-                        borderWidth: '1px',
-                        borderRadius: 'lg',
-                        borderColor: 'rgba(217, 76, 214)',
-                    }}
-                />
-                <Button onClick={handleSubmit(wave)} disabled={disableWaveButton}>
-                    {loadingMessage ? loadingMessage : 'Wave at Me'}
-                </Button>
+    const renderConnectedContent = () => {
+        const isWinner = lotteryResultMessage && lotteryResultMessage.includes('Congrats');
+        return (
+            <>
+                <Card>
+                    <GradientText textAlign="center" fontSize="24px" mb="8px">
+                        Send a Wave:
+                    </GradientText>
+                    <Textarea
+                        {...register('message')}
+                        name="message"
+                        placeholder="👋 gm!"
+                        _focus={{
+                            outline: 'none',
+                            borderWidth: '1px',
+                            borderRadius: 'lg',
+                            borderColor: 'rgba(217, 76, 214)',
+                        }}
+                    />
+                    <Button onClick={handleSubmit(wave)} disabled={disableWaveButton}>
+                        {loadingMessage ? loadingMessage : 'Wave at Me'}
+                    </Button>
 
-                {lotteryResultMessage ? (
-                    <Text textAlign="center" mb="8px">
-                        {lotteryResultMessage}
-                    </Text>
-                ) : null}
-            </Card>
-
-            <Card>
-                <GradientText textAlign="center" fontSize="24px" mb="8px">
-                    All Waves
-                </GradientText>
-                {allWaves.map((wave, index) => {
-                    return (
-                        <Box
-                            key={index}
-                            mb={index === allWaves.length - 1 ? '0' : '16px'}
-                            p="16px"
-                            bgColor="main.200"
-                            borderRadius="lg"
-                        >
-                            <Text>Address: {wave.address}</Text>
-                            <Text>Time: {wave.timestamp.toString()}</Text>
-                            <Text>Message: {wave.message}</Text>
+                    {lotteryResultMessage ? (
+                        <Box bgColor={isWinner ? '#DFF2BF' : '#FFD2D2'} borderRadius="lg" p="8px" mb="8px">
+                            <Text textAlign="center" color={isWinner ? '#4F8A10' : '#D8000C'}>
+                                {lotteryResultMessage}
+                            </Text>
                         </Box>
-                    );
-                })}
-            </Card>
-        </>
-    );
+                    ) : null}
+                </Card>
+
+                <Card>
+                    <GradientText textAlign="center" fontSize="24px" mb="8px">
+                        All Waves
+                    </GradientText>
+                    {allWaves.map((wave, index) => {
+                        return (
+                            <Box
+                                key={index}
+                                mb={index === allWaves.length - 1 ? '0' : '16px'}
+                                p="16px"
+                                bgColor="main.200"
+                                borderRadius="lg"
+                            >
+                                <Text>Address: {wave.address}</Text>
+                                <Text>Time: {wave.timestamp.toString()}</Text>
+                                <Text>Message: {wave.message}</Text>
+                            </Box>
+                        );
+                    })}
+                </Card>
+            </>
+        );
+    };
 
     return (
         <Flex>
