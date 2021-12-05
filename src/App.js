@@ -4,9 +4,11 @@ import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { Flex, Textarea, Text, Box } from '@chakra-ui/react';
+import truncateEthAddress from 'truncate-eth-address';
 import Button from './components/Button';
 import Layout from './components/Layout';
 import Card from './components/Card';
+import GradientText from './components/GradientText';
 import { setCurrentAccount } from './store/reducers/web3Reducer';
 import { getWavePortalContract, fetchContractBalance } from './utils/web3Helpers';
 
@@ -218,7 +220,7 @@ const App = () => {
                 <Text as="span" role="img" aria-label="wave">
                     👋
                 </Text>{' '}
-                Hey there!
+                Hey {currentAccount ? truncateEthAddress(currentAccount) : 'there'}!
             </Box>
 
             <Text as="p" my="16px" textAlign="center">
@@ -234,7 +236,9 @@ const App = () => {
     const renderLotteryContent = () => (
         <Card>
             <Box textAlign="center">
-                <Text>Lottery Prize Pool:</Text>
+                <GradientText textAlign="center" fontSize="24px" mb="8px">
+                    Lottery Prize Pool:
+                </GradientText>
                 <Text fontSize="2xl">{contractBalance} ETH</Text>
             </Box>
         </Card>
@@ -243,15 +247,35 @@ const App = () => {
     const renderConnectedContent = () => (
         <>
             <Card>
-                <Textarea {...register('message')} name="message" />
+                <GradientText textAlign="center" fontSize="24px" mb="8px">
+                    Send a Wave:
+                </GradientText>
+                <Textarea
+                    {...register('message')}
+                    name="message"
+                    placeholder="👋 gm!"
+                    _focus={{
+                        outline: 'none',
+                        borderWidth: '1px',
+                        borderRadius: 'lg',
+                        borderColor: 'rgba(217, 76, 214)',
+                    }}
+                />
                 <Button onClick={handleSubmit(wave)} disabled={disableWaveButton}>
                     {loadingMessage ? loadingMessage : 'Wave at Me'}
                 </Button>
 
-                {lotteryResultMessage ? <Text>{lotteryResultMessage}</Text> : null}
+                {lotteryResultMessage ? (
+                    <Text textAlign="center" mb="8px">
+                        {lotteryResultMessage}
+                    </Text>
+                ) : null}
             </Card>
 
             <Card>
+                <GradientText textAlign="center" fontSize="24px" mb="8px">
+                    All Waves
+                </GradientText>
                 {allWaves.map((wave, index) => {
                     return (
                         <Box
@@ -276,16 +300,9 @@ const App = () => {
             <Layout>
                 <Flex justifyContent="center" width="100%">
                     <Flex direction="column" justifyContent="center" maxW="700px">
-                        <Text
-                            fontWeight="bold"
-                            fontSize="36px"
-                            m={0}
-                            bgGradient="linear(43deg, rgb(217, 76, 214) 12.66%, rgb(81, 182, 249) 121.19%, rgba(217, 76, 214, 0) 121.2%)"
-                            bgClip="text"
-                            textAlign="center"
-                        >
+                        <GradientText fontSize="36px" m={0} textAlign="center">
                             Wave Portal
-                        </Text>
+                        </GradientText>
 
                         {isRinkeby ? (
                             <>
